@@ -132,6 +132,8 @@ namespace DataBaseGenerator
 			_sqlConnectionString.AttachDBFilename = @"";
 			_sqlConnectionString.DataSource = @"";
 			_sqlConnectionString.InitialCatalog = @"";
+			_sqlConnectionString.Password = @"";
+			_sqlConnectionString.UserID = @"";
 
 			_txtNameServer.Text = "";
 			_cmbListDB.Items.Clear();
@@ -146,6 +148,16 @@ namespace DataBaseGenerator
 		private void _cmbListDB_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			_sqlConnectionString.InitialCatalog = _cmbListDB.SelectedItem.ToString();
+		}
+
+		private void _txtPassword_TextChanged(object sender, EventArgs e)
+		{
+			_sqlConnectionString.Password = @_txtPassword.Text;
+		}
+
+		private void _txtNameUser_TextChanged(object sender, EventArgs e)
+		{
+			_sqlConnectionString.UserID = @_txtNameUser.Text;
 		}
 	}
 }

@@ -29,6 +29,7 @@ namespace DataBaseGenerator
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.components = new System.ComponentModel.Container();
 			this._txtQuery = new System.Windows.Forms.TextBox();
 			this._btnExecuteQuery = new System.Windows.Forms.Button();
 			this._dgvDatabase = new System.Windows.Forms.DataGridView();
@@ -43,6 +44,11 @@ namespace DataBaseGenerator
 			this.label2 = new System.Windows.Forms.Label();
 			this._txtNameServer = new System.Windows.Forms.TextBox();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.label4 = new System.Windows.Forms.Label();
+			this._txtNameUser = new System.Windows.Forms.TextBox();
+			this.label5 = new System.Windows.Forms.Label();
+			this._txtPassword = new System.Windows.Forms.TextBox();
+			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._dgvDatabase)).BeginInit();
 			this._tcControl.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -129,6 +135,10 @@ namespace DataBaseGenerator
 			// 
 			// tabPage2
 			// 
+			this.tabPage2.Controls.Add(this._txtPassword);
+			this.tabPage2.Controls.Add(this.label5);
+			this.tabPage2.Controls.Add(this._txtNameUser);
+			this.tabPage2.Controls.Add(this.label4);
 			this.tabPage2.Controls.Add(this.label3);
 			this.tabPage2.Controls.Add(this._cmbListDB);
 			this.tabPage2.Controls.Add(this.label2);
@@ -144,7 +154,7 @@ namespace DataBaseGenerator
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(390, 43);
+			this.label3.Location = new System.Drawing.Point(386, 6);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(161, 17);
 			this.label3.TabIndex = 3;
@@ -153,7 +163,7 @@ namespace DataBaseGenerator
 			// _cmbListDB
 			// 
 			this._cmbListDB.FormattingEnabled = true;
-			this._cmbListDB.Location = new System.Drawing.Point(393, 66);
+			this._cmbListDB.Location = new System.Drawing.Point(389, 29);
 			this._cmbListDB.Name = "_cmbListDB";
 			this._cmbListDB.Size = new System.Drawing.Size(225, 24);
 			this._cmbListDB.TabIndex = 2;
@@ -163,7 +173,7 @@ namespace DataBaseGenerator
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(20, 43);
+			this.label2.Location = new System.Drawing.Point(16, 6);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(93, 17);
 			this.label2.TabIndex = 1;
@@ -171,7 +181,7 @@ namespace DataBaseGenerator
 			// 
 			// _txtNameServer
 			// 
-			this._txtNameServer.Location = new System.Drawing.Point(20, 66);
+			this._txtNameServer.Location = new System.Drawing.Point(16, 29);
 			this._txtNameServer.Name = "_txtNameServer";
 			this._txtNameServer.Size = new System.Drawing.Size(336, 22);
 			this._txtNameServer.TabIndex = 0;
@@ -180,6 +190,47 @@ namespace DataBaseGenerator
 			// openFileDialog1
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(16, 63);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(135, 17);
+			this.label4.TabIndex = 4;
+			this.label4.Text = "Имя пользователя:";
+			// 
+			// _txtNameUser
+			// 
+			this._txtNameUser.Location = new System.Drawing.Point(16, 83);
+			this._txtNameUser.Name = "_txtNameUser";
+			this._txtNameUser.Size = new System.Drawing.Size(135, 22);
+			this._txtNameUser.TabIndex = 5;
+			this._txtNameUser.TextChanged += new System.EventHandler(this._txtNameUser_TextChanged);
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Location = new System.Drawing.Point(217, 63);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(61, 17);
+			this.label5.TabIndex = 6;
+			this.label5.Text = "Пароль:";
+			// 
+			// _txtPassword
+			// 
+			this._txtPassword.Location = new System.Drawing.Point(217, 83);
+			this._txtPassword.Name = "_txtPassword";
+			this._txtPassword.PasswordChar = '*';
+			this._txtPassword.Size = new System.Drawing.Size(135, 22);
+			this._txtPassword.TabIndex = 7;
+			this._txtPassword.TextChanged += new System.EventHandler(this._txtPassword_TextChanged);
+			// 
+			// contextMenuStrip1
+			// 
+			this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+			this.contextMenuStrip1.Name = "contextMenuStrip1";
+			this.contextMenuStrip1.Size = new System.Drawing.Size(61, 4);
 			// 
 			// _Window
 			// 
@@ -218,6 +269,11 @@ namespace DataBaseGenerator
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox _txtNameServer;
 		private System.Windows.Forms.OpenFileDialog openFileDialog1;
+		private System.Windows.Forms.TextBox _txtPassword;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.TextBox _txtNameUser;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
 	}
 }
 
