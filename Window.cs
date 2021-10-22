@@ -21,6 +21,15 @@ namespace DataBaseGenerator
 
 		// Название локального сервера
 		// public const string NAME_LOCAL_SERVER = @"(localdb)\MSSQLLocalDB";
+		public const string LOCAL_DATABASE = 
+			@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Database;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+		
+		public const string LOCAL_DATABASE_GENERATOR =
+			@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=GeneratorData;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+		// [1; 3000] - диапазон данных, которые будут взяты из БД
+		public const int MIN_SIZE = 1;
+		public const int MAX_SIZE = 3000;
 
 		public _Window()
 		{
@@ -62,7 +71,7 @@ namespace DataBaseGenerator
 					connection.Close();
 				}
 			}
-			catch(Exception error)
+			catch (Exception error)
 			{
 				MessageBox.Show("При выполнении операции возникла ошибка! \n" + error.Message,
 					"Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -77,7 +86,7 @@ namespace DataBaseGenerator
 		private void _btnFindFile_Click(object sender, EventArgs e)
 		{
 			// Отображение OpenFileDialog для выбора файла 
-			if(openFileDialog1.ShowDialog() == DialogResult.Cancel)
+			if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
 			{
 				_sqlConnectionString.AttachDBFilename = @"";
 				_sqlConnectionString.DataSource = @"";
@@ -158,6 +167,59 @@ namespace DataBaseGenerator
 		private void _txtNameUser_TextChanged(object sender, EventArgs e)
 		{
 			_sqlConnectionString.UserID = @_txtNameUser.Text;
+		}
+
+		private SqlConnection GetConnection(string connect)
+		{
+			SqlConnection connection = new SqlConnection();
+			connection.ConnectionString = connect;
+
+			return connection;
+		}
+
+		private void btnGenerateReader_Click(object sender, EventArgs e)
+		{
+			Random rand = new Random();
+			DataTable table = new DataTable();
+
+			pbReaderGenerator.Value = 0;
+			pbReaderGenerator.Maximum = (int)numericUpDown1.Value;
+
+			// 1) Подготовка рандомных данных для заполнения
+			using (var connection = GetConnection(LOCAL_DATABASE_GENERATOR))
+			{
+				connection.Open();
+
+				// Считывание всех данных из таблицы dbo.table_reader_data
+				SqlCommand command = new SqlCommand("SELECT * FROM dbo.table_reader_data", connection);
+				using (var reader = command.ExecuteReader())
+				{
+					table.Load(reader);
+					reader.Close();
+				}
+
+				connection.Close();
+			}
+
+			// 2) Добавление записей в таблицу читателей
+			using (var connection = GetConnection(LOCAL_DATABASE))
+			{
+				connection.Open();
+
+				for (var i = 0; i < numericUpDown1.Value; ++i)
+				{
+					DataRow row = table.Rows[rand.Next(MIN_SIZE, MAX_SIZE)];
+					SqlCommand command = new SqlCommand("INSERT INTO readers VALUES(@password_data, @full_name, @home_address)", connection);
+					command.Parameters.AddWithValue("@password_data", row["password_data"]);
+					command.Parameters.AddWithValue("@full_name", row["full_name"]);
+					command.Parameters.AddWithValue("@home_address", row["home_address"]);
+					command.ExecuteNonQuery();
+
+					pbReaderGenerator.Value++;
+				}
+
+				connection.Close();
+			}
 		}
 	}
 }
