@@ -52,10 +52,33 @@ namespace DataBaseGenerator
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
+			this.label15 = new System.Windows.Forms.Label();
+			this._tbNameLarisa = new System.Windows.Forms.TrackBar();
+			this.label16 = new System.Windows.Forms.Label();
+			this.label17 = new System.Windows.Forms.Label();
+			this._tbNameAnna = new System.Windows.Forms.TrackBar();
+			this._tbNameMaria = new System.Windows.Forms.TrackBar();
+			this.label12 = new System.Windows.Forms.Label();
+			this._tbNameArtem = new System.Windows.Forms.TrackBar();
+			this.label11 = new System.Windows.Forms.Label();
+			this.label10 = new System.Windows.Forms.Label();
+			this._tbNameMaxim = new System.Windows.Forms.TrackBar();
+			this._tbNameMichael = new System.Windows.Forms.TrackBar();
+			this.label9 = new System.Windows.Forms.Label();
+			this.label8 = new System.Windows.Forms.Label();
+			this.label7 = new System.Windows.Forms.Label();
+			this._tbMaleFemale = new System.Windows.Forms.TrackBar();
 			this.btnGenerateReader = new System.Windows.Forms.Button();
 			this.pbReaderGenerator = new System.Windows.Forms.ProgressBar();
 			this.label6 = new System.Windows.Forms.Label();
 			this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+			this._lCountMichael = new System.Windows.Forms.Label();
+			this._lCountMaxim = new System.Windows.Forms.Label();
+			this._lCountArtem = new System.Windows.Forms.Label();
+			this._lCountAnna = new System.Windows.Forms.Label();
+			this._lCountMaria = new System.Windows.Forms.Label();
+			this._lCountLarisa = new System.Windows.Forms.Label();
+			this._lCountManWomen = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this._dgvDatabase)).BeginInit();
 			this._tcControl.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -63,6 +86,13 @@ namespace DataBaseGenerator
 			this.tabControl1.SuspendLayout();
 			this.tabPage3.SuspendLayout();
 			this.tabPage4.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameLarisa)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameAnna)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameMaria)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameArtem)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameMaxim)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameMichael)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbMaleFemale)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -250,7 +280,7 @@ namespace DataBaseGenerator
 			this.tabControl1.Location = new System.Drawing.Point(9, 170);
 			this.tabControl1.Name = "tabControl1";
 			this.tabControl1.SelectedIndex = 0;
-			this.tabControl1.Size = new System.Drawing.Size(830, 665);
+			this.tabControl1.Size = new System.Drawing.Size(830, 662);
 			this.tabControl1.TabIndex = 6;
 			// 
 			// tabPage3
@@ -261,13 +291,36 @@ namespace DataBaseGenerator
 			this.tabPage3.Location = new System.Drawing.Point(4, 25);
 			this.tabPage3.Name = "tabPage3";
 			this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage3.Size = new System.Drawing.Size(822, 636);
+			this.tabPage3.Size = new System.Drawing.Size(822, 724);
 			this.tabPage3.TabIndex = 0;
 			this.tabPage3.Text = "Запросы";
 			this.tabPage3.UseVisualStyleBackColor = true;
 			// 
 			// tabPage4
 			// 
+			this.tabPage4.Controls.Add(this._lCountManWomen);
+			this.tabPage4.Controls.Add(this._lCountLarisa);
+			this.tabPage4.Controls.Add(this._lCountMaria);
+			this.tabPage4.Controls.Add(this._lCountAnna);
+			this.tabPage4.Controls.Add(this._lCountArtem);
+			this.tabPage4.Controls.Add(this._lCountMaxim);
+			this.tabPage4.Controls.Add(this._lCountMichael);
+			this.tabPage4.Controls.Add(this.label15);
+			this.tabPage4.Controls.Add(this._tbNameLarisa);
+			this.tabPage4.Controls.Add(this.label16);
+			this.tabPage4.Controls.Add(this.label17);
+			this.tabPage4.Controls.Add(this._tbNameAnna);
+			this.tabPage4.Controls.Add(this._tbNameMaria);
+			this.tabPage4.Controls.Add(this.label12);
+			this.tabPage4.Controls.Add(this._tbNameArtem);
+			this.tabPage4.Controls.Add(this.label11);
+			this.tabPage4.Controls.Add(this.label10);
+			this.tabPage4.Controls.Add(this._tbNameMaxim);
+			this.tabPage4.Controls.Add(this._tbNameMichael);
+			this.tabPage4.Controls.Add(this.label9);
+			this.tabPage4.Controls.Add(this.label8);
+			this.tabPage4.Controls.Add(this.label7);
+			this.tabPage4.Controls.Add(this._tbMaleFemale);
 			this.tabPage4.Controls.Add(this.btnGenerateReader);
 			this.tabPage4.Controls.Add(this.pbReaderGenerator);
 			this.tabPage4.Controls.Add(this.label6);
@@ -275,14 +328,153 @@ namespace DataBaseGenerator
 			this.tabPage4.Location = new System.Drawing.Point(4, 25);
 			this.tabPage4.Name = "tabPage4";
 			this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPage4.Size = new System.Drawing.Size(822, 636);
+			this.tabPage4.Size = new System.Drawing.Size(822, 633);
 			this.tabPage4.TabIndex = 1;
 			this.tabPage4.Text = "Генератор читателей";
 			this.tabPage4.UseVisualStyleBackColor = true;
 			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(519, 381);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(57, 17);
+			this.label15.TabIndex = 23;
+			this.label15.Text = "Лариса";
+			// 
+			// _tbNameLarisa
+			// 
+			this._tbNameLarisa.Location = new System.Drawing.Point(517, 401);
+			this._tbNameLarisa.Name = "_tbNameLarisa";
+			this._tbNameLarisa.Size = new System.Drawing.Size(162, 56);
+			this._tbNameLarisa.TabIndex = 22;
+			this._tbNameLarisa.ValueChanged += new System.EventHandler(this._tbNameLarisa_ValueChanged);
+			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(514, 279);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(41, 17);
+			this.label16.TabIndex = 21;
+			this.label16.Text = "Анна";
+			// 
+			// label17
+			// 
+			this.label17.AutoSize = true;
+			this.label17.Location = new System.Drawing.Point(514, 187);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(51, 17);
+			this.label17.TabIndex = 20;
+			this.label17.Text = "Мария";
+			// 
+			// _tbNameAnna
+			// 
+			this._tbNameAnna.Location = new System.Drawing.Point(517, 299);
+			this._tbNameAnna.Name = "_tbNameAnna";
+			this._tbNameAnna.Size = new System.Drawing.Size(162, 56);
+			this._tbNameAnna.TabIndex = 19;
+			this._tbNameAnna.ValueChanged += new System.EventHandler(this._tbNameAnna_ValueChanged);
+			// 
+			// _tbNameMaria
+			// 
+			this._tbNameMaria.Location = new System.Drawing.Point(517, 207);
+			this._tbNameMaria.Name = "_tbNameMaria";
+			this._tbNameMaria.Size = new System.Drawing.Size(162, 56);
+			this._tbNameMaria.TabIndex = 18;
+			this._tbNameMaria.ValueChanged += new System.EventHandler(this._tbNameMaria_ValueChanged);
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(18, 381);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(49, 17);
+			this.label12.TabIndex = 15;
+			this.label12.Text = "Артём";
+			// 
+			// _tbNameArtem
+			// 
+			this._tbNameArtem.Location = new System.Drawing.Point(16, 401);
+			this._tbNameArtem.Name = "_tbNameArtem";
+			this._tbNameArtem.Size = new System.Drawing.Size(162, 56);
+			this._tbNameArtem.TabIndex = 14;
+			this._tbNameArtem.ValueChanged += new System.EventHandler(this._tbNameArtem_ValueChanged);
+			// 
+			// label11
+			// 
+			this.label11.AutoSize = true;
+			this.label11.Location = new System.Drawing.Point(13, 279);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(58, 17);
+			this.label11.TabIndex = 13;
+			this.label11.Text = "Максим";
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Location = new System.Drawing.Point(13, 187);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(57, 17);
+			this.label10.TabIndex = 12;
+			this.label10.Text = "Михаил";
+			// 
+			// _tbNameMaxim
+			// 
+			this._tbNameMaxim.Location = new System.Drawing.Point(16, 299);
+			this._tbNameMaxim.Name = "_tbNameMaxim";
+			this._tbNameMaxim.Size = new System.Drawing.Size(162, 56);
+			this._tbNameMaxim.TabIndex = 9;
+			this._tbNameMaxim.ValueChanged += new System.EventHandler(this._tbNameMaxim_ValueChanged);
+			// 
+			// _tbNameMichael
+			// 
+			this._tbNameMichael.Location = new System.Drawing.Point(16, 207);
+			this._tbNameMichael.Name = "_tbNameMichael";
+			this._tbNameMichael.Size = new System.Drawing.Size(162, 56);
+			this._tbNameMichael.TabIndex = 8;
+			this._tbNameMichael.ValueChanged += new System.EventHandler(this._tbNameMichael_ValueChanged);
+			// 
+			// label9
+			// 
+			this.label9.AutoSize = true;
+			this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.label9.Location = new System.Drawing.Point(12, 138);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(169, 20);
+			this.label9.TabIndex = 7;
+			this.label9.Text = "Популярные имена";
+			// 
+			// label8
+			// 
+			this.label8.AutoSize = true;
+			this.label8.Location = new System.Drawing.Point(717, 18);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(74, 17);
+			this.label8.TabIndex = 6;
+			this.label8.Text = "Женщины";
+			// 
+			// label7
+			// 
+			this.label7.AutoSize = true;
+			this.label7.Location = new System.Drawing.Point(13, 18);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(69, 17);
+			this.label7.TabIndex = 5;
+			this.label7.Text = "Мужчины";
+			// 
+			// _tbMaleFemale
+			// 
+			this._tbMaleFemale.Location = new System.Drawing.Point(19, 52);
+			this._tbMaleFemale.Maximum = 10000;
+			this._tbMaleFemale.Name = "_tbMaleFemale";
+			this._tbMaleFemale.Size = new System.Drawing.Size(772, 56);
+			this._tbMaleFemale.TabIndex = 4;
+			this._tbMaleFemale.ValueChanged += new System.EventHandler(this._tbMaleFemale_ValueChanged);
+			// 
 			// btnGenerateReader
 			// 
-			this.btnGenerateReader.Location = new System.Drawing.Point(686, 87);
+			this.btnGenerateReader.Location = new System.Drawing.Point(686, 543);
 			this.btnGenerateReader.Name = "btnGenerateReader";
 			this.btnGenerateReader.Size = new System.Drawing.Size(130, 37);
 			this.btnGenerateReader.TabIndex = 3;
@@ -292,7 +484,7 @@ namespace DataBaseGenerator
 			// 
 			// pbReaderGenerator
 			// 
-			this.pbReaderGenerator.Location = new System.Drawing.Point(19, 87);
+			this.pbReaderGenerator.Location = new System.Drawing.Point(16, 543);
 			this.pbReaderGenerator.Name = "pbReaderGenerator";
 			this.pbReaderGenerator.Size = new System.Drawing.Size(645, 37);
 			this.pbReaderGenerator.TabIndex = 2;
@@ -300,7 +492,7 @@ namespace DataBaseGenerator
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(19, 18);
+			this.label6.Location = new System.Drawing.Point(16, 486);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(86, 17);
 			this.label6.TabIndex = 1;
@@ -308,9 +500,9 @@ namespace DataBaseGenerator
 			// 
 			// numericUpDown1
 			// 
-			this.numericUpDown1.Location = new System.Drawing.Point(19, 41);
+			this.numericUpDown1.Location = new System.Drawing.Point(16, 509);
 			this.numericUpDown1.Maximum = new decimal(new int[] {
-            50000,
+            10000,
             0,
             0,
             0});
@@ -318,11 +510,74 @@ namespace DataBaseGenerator
 			this.numericUpDown1.Size = new System.Drawing.Size(120, 22);
 			this.numericUpDown1.TabIndex = 0;
 			// 
+			// _lCountMichael
+			// 
+			this._lCountMichael.AutoSize = true;
+			this._lCountMichael.Location = new System.Drawing.Point(185, 224);
+			this._lCountMichael.Name = "_lCountMichael";
+			this._lCountMichael.Size = new System.Drawing.Size(16, 17);
+			this._lCountMichael.TabIndex = 24;
+			this._lCountMichael.Text = "0";
+			// 
+			// _lCountMaxim
+			// 
+			this._lCountMaxim.AutoSize = true;
+			this._lCountMaxim.Location = new System.Drawing.Point(185, 320);
+			this._lCountMaxim.Name = "_lCountMaxim";
+			this._lCountMaxim.Size = new System.Drawing.Size(16, 17);
+			this._lCountMaxim.TabIndex = 25;
+			this._lCountMaxim.Text = "0";
+			// 
+			// _lCountArtem
+			// 
+			this._lCountArtem.AutoSize = true;
+			this._lCountArtem.Location = new System.Drawing.Point(185, 424);
+			this._lCountArtem.Name = "_lCountArtem";
+			this._lCountArtem.Size = new System.Drawing.Size(16, 17);
+			this._lCountArtem.TabIndex = 26;
+			this._lCountArtem.Text = "0";
+			// 
+			// _lCountAnna
+			// 
+			this._lCountAnna.AutoSize = true;
+			this._lCountAnna.Location = new System.Drawing.Point(685, 320);
+			this._lCountAnna.Name = "_lCountAnna";
+			this._lCountAnna.Size = new System.Drawing.Size(16, 17);
+			this._lCountAnna.TabIndex = 27;
+			this._lCountAnna.Text = "0";
+			// 
+			// _lCountMaria
+			// 
+			this._lCountMaria.AutoSize = true;
+			this._lCountMaria.Location = new System.Drawing.Point(685, 224);
+			this._lCountMaria.Name = "_lCountMaria";
+			this._lCountMaria.Size = new System.Drawing.Size(16, 17);
+			this._lCountMaria.TabIndex = 28;
+			this._lCountMaria.Text = "0";
+			// 
+			// _lCountLarisa
+			// 
+			this._lCountLarisa.AutoSize = true;
+			this._lCountLarisa.Location = new System.Drawing.Point(685, 424);
+			this._lCountLarisa.Name = "_lCountLarisa";
+			this._lCountLarisa.Size = new System.Drawing.Size(16, 17);
+			this._lCountLarisa.TabIndex = 29;
+			this._lCountLarisa.Text = "0";
+			// 
+			// _lCountManWomen
+			// 
+			this._lCountManWomen.AutoSize = true;
+			this._lCountManWomen.Location = new System.Drawing.Point(389, 32);
+			this._lCountManWomen.Name = "_lCountManWomen";
+			this._lCountManWomen.Size = new System.Drawing.Size(60, 17);
+			this._lCountManWomen.TabIndex = 30;
+			this._lCountManWomen.Text = "10000/0";
+			// 
 			// _Window
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(847, 847);
+			this.ClientSize = new System.Drawing.Size(847, 841);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this._tcControl);
 			this.Name = "_Window";
@@ -338,6 +593,13 @@ namespace DataBaseGenerator
 			this.tabPage3.PerformLayout();
 			this.tabPage4.ResumeLayout(false);
 			this.tabPage4.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameLarisa)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameAnna)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameMaria)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameArtem)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameMaxim)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbNameMichael)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbMaleFemale)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
 			this.ResumeLayout(false);
 
@@ -370,6 +632,29 @@ namespace DataBaseGenerator
 		private System.Windows.Forms.ProgressBar pbReaderGenerator;
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.NumericUpDown numericUpDown1;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.TrackBar _tbMaleFemale;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.TrackBar _tbNameLarisa;
+		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.Label label17;
+		private System.Windows.Forms.TrackBar _tbNameAnna;
+		private System.Windows.Forms.TrackBar _tbNameMaria;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.TrackBar _tbNameArtem;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.TrackBar _tbNameMaxim;
+		private System.Windows.Forms.TrackBar _tbNameMichael;
+		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.Label _lCountLarisa;
+		private System.Windows.Forms.Label _lCountMaria;
+		private System.Windows.Forms.Label _lCountAnna;
+		private System.Windows.Forms.Label _lCountArtem;
+		private System.Windows.Forms.Label _lCountMaxim;
+		private System.Windows.Forms.Label _lCountMichael;
+		private System.Windows.Forms.Label _lCountManWomen;
 	}
 }
 

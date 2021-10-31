@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Bogus;
+using Bogus.DataSets;
 
 namespace DataBaseGenerator
 {
@@ -16,6 +18,20 @@ namespace DataBaseGenerator
 	/// </summary>
 	public partial class _Window : Form
 	{
+		/// <summary>
+		/// Структура под промежуток
+		/// </summary>
+		struct Range
+		{
+			public double min;
+			public double max;
+
+			public bool CheckContains(double value)
+			{
+				return min <= value && value <= max;
+			}
+		}
+
 		// Строка подключения к базе данных
 		private SqlConnectionStringBuilder _sqlConnectionString = new SqlConnectionStringBuilder();
 
@@ -29,7 +45,12 @@ namespace DataBaseGenerator
 
 		// [1; 3000] - диапазон данных, которые будут взяты из БД
 		public const int MIN_SIZE = 1;
-		public const int MAX_SIZE = 3000;
+		public const int MAX_SIZE = 90000;
+
+		// Максимальная величина выборки данных для генерации
+		public const int MAX_LENGHT_SAMPLE			= 10000;
+		public List<string> DEFAULT_MALE_NAMES		= new List<string>{ "Михаил", "Максим", "Артём" };
+		public List<string> DEFAULT_FEMALE_NAMES	= new List<string>{ "Мария", "Анна", "Лариса" };
 
 		public _Window()
 		{
@@ -179,40 +200,83 @@ namespace DataBaseGenerator
 
 		private void btnGenerateReader_Click(object sender, EventArgs e)
 		{
-			Random rand = new Random();
-			DataTable table = new DataTable();
-
 			pbReaderGenerator.Value = 0;
 			pbReaderGenerator.Maximum = (int)numericUpDown1.Value;
 
-			// 1) Подготовка рандомных данных для заполнения
-			using (var connection = GetConnection(LOCAL_DATABASE_GENERATOR))
-			{
-				connection.Open();
-
-				// Считывание всех данных из таблицы dbo.table_reader_data
-				SqlCommand command = new SqlCommand("SELECT * FROM dbo.table_reader_data", connection);
-				using (var reader = command.ExecuteReader())
-				{
-					table.Load(reader);
-					reader.Close();
-				}
-
-				connection.Close();
-			}
-
-			// 2) Добавление записей в таблицу читателей
+			var faker = new Faker("ru");
 			using (var connection = GetConnection(LOCAL_DATABASE))
 			{
 				connection.Open();
 
-				for (var i = 0; i < numericUpDown1.Value; ++i)
+				var names = new Dictionary<string, TrackBar>
 				{
-					DataRow row = table.Rows[rand.Next(MIN_SIZE, MAX_SIZE)];
-					SqlCommand command = new SqlCommand("INSERT INTO readers VALUES(@password_data, @full_name, @home_address)", connection);
-					command.Parameters.AddWithValue("@password_data", row["password_data"]);
-					command.Parameters.AddWithValue("@full_name", row["full_name"]);
-					command.Parameters.AddWithValue("@home_address", row["home_address"]);
+					["Михаил"]	= _tbNameMichael,
+					["Максим"]	= _tbNameMaxim,
+					["Артем"]	= _tbNameArtem,
+					["Мария"]	= _tbNameMaria,
+					["Анна"]	= _tbNameAnna,
+					["Лариса"]	= _tbNameLarisa,
+				};
+
+				int totalNames = names.Values.Sum(tb => tb.Value);
+
+				Dictionary<string, Range> namesProbablity = new Dictionary<string, Range>();
+				double previousProbabilty = 0;
+
+				foreach(var item in names)
+				{
+					double k = (double)names[item.Key].Value / totalNames;
+					if (k > 0)
+					{
+						namesProbablity[item.Key] = new Range
+						{
+							min = previousProbabilty,
+							max = previousProbabilty + k
+						};
+
+						previousProbabilty += k;
+					}
+				}
+
+				Random rnd = new Random();
+
+				for (var i = 0; i < numericUpDown1.Value; i++)
+				{
+					string name = null;
+					var k = rnd.NextDouble();
+
+					foreach(var item in namesProbablity)
+					{
+						if (item.Value.CheckContains(k))
+						{
+							name = item.Key;
+							break;
+						}
+					}
+
+					if(name == null)
+					{
+						name = faker.Name.FullName();
+					}
+					else
+					{
+						if(DEFAULT_MALE_NAMES.IndexOf(name) >= 0)
+						{
+							name += " " + faker.Name.LastName(Bogus.DataSets.Name.Gender.Male);
+						}
+						else
+						{
+							name += " " + faker.Name.LastName(Bogus.DataSets.Name.Gender.Female);
+						}
+					}
+
+					SqlCommand command = new SqlCommand(
+						"INSERT INTO readers VALUES(@password_data, @full_name, @home_address)", 
+						connection);
+
+					command.Parameters.AddWithValue("@password_data", faker.Random.String2(10, "1234567890"));
+					command.Parameters.AddWithValue("@full_name", @name);
+					command.Parameters.AddWithValue("@home_address", @faker.Address.StreetAddress());
 					command.ExecuteNonQuery();
 
 					pbReaderGenerator.Value++;
@@ -220,6 +284,42 @@ namespace DataBaseGenerator
 
 				connection.Close();
 			}
+		}
+
+		private void _tbNameMichael_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountMichael.Text = _tbNameMichael.Value.ToString();
+		}
+
+		private void _tbNameMaxim_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountMaxim.Text = _tbNameMaxim.Value.ToString();
+		}
+
+		private void _tbNameArtem_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountArtem.Text = _tbNameArtem.Value.ToString();
+		}
+
+		private void _tbNameMaria_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountMaria.Text = _tbNameMaria.Value.ToString();
+		}
+
+		private void _tbNameAnna_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountAnna.Text = _tbNameAnna.Value.ToString();
+		}
+
+		private void _tbNameLarisa_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountLarisa.Text = _tbNameLarisa.Value.ToString();
+		}
+
+		private void _tbMaleFemale_ValueChanged(object sender, EventArgs e)
+		{
+			int value = _tbMaleFemale.Value;
+			_lCountManWomen.Text = (MAX_LENGHT_SAMPLE - value).ToString() + "/" + value.ToString();
 		}
 	}
 }
