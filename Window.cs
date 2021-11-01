@@ -198,50 +198,66 @@ namespace DataBaseGenerator
 			return connection;
 		}
 
+		private Dictionary<string, Range> getNamesProbability(Dictionary<string, TrackBar> names)
+		{
+			int totalNames = names.Values.Sum(tb => tb.Value);
+
+			Dictionary<string, Range> namesProbablity = new Dictionary<string, Range>();
+			double previousProbabilty = 0;
+
+			foreach (var item in names)
+			{
+				double k = (double)names[item.Key].Value / totalNames;
+				if (k > 0)
+				{
+					namesProbablity[item.Key] = new Range
+					{
+						min = previousProbabilty,
+						max = previousProbabilty + k
+					};
+
+					previousProbabilty += k;
+				}
+			}
+
+			return namesProbablity;
+		}
+
 		private void btnGenerateReader_Click(object sender, EventArgs e)
 		{
 			pbReaderGenerator.Value = 0;
 			pbReaderGenerator.Maximum = (int)numericUpDown1.Value;
 
+			Random rnd = new Random();
+
+			// Подключение библиотеки Faker для генерации произвольных данных
 			var faker = new Faker("ru");
+
 			using (var connection = GetConnection(LOCAL_DATABASE))
 			{
 				connection.Open();
 
-				var names = new Dictionary<string, TrackBar>
+				Dictionary<string, Range> namesProbablityMale = getNamesProbability(new Dictionary<string, TrackBar>
 				{
 					["Михаил"]	= _tbNameMichael,
 					["Максим"]	= _tbNameMaxim,
 					["Артем"]	= _tbNameArtem,
+				});
+
+				Dictionary<string, Range> namesProbablityFemale = getNamesProbability(new Dictionary<string, TrackBar>
+				{
 					["Мария"]	= _tbNameMaria,
 					["Анна"]	= _tbNameAnna,
 					["Лариса"]	= _tbNameLarisa,
-				};
-
-				int totalNames = names.Values.Sum(tb => tb.Value);
-
-				Dictionary<string, Range> namesProbablity = new Dictionary<string, Range>();
-				double previousProbabilty = 0;
-
-				foreach(var item in names)
-				{
-					double k = (double)names[item.Key].Value / totalNames;
-					if (k > 0)
-					{
-						namesProbablity[item.Key] = new Range
-						{
-							min = previousProbabilty,
-							max = previousProbabilty + k
-						};
-
-						previousProbabilty += k;
-					}
-				}
-
-				Random rnd = new Random();
+				});
 
 				for (var i = 0; i < numericUpDown1.Value; i++)
 				{
+					var isMale = ((double)_tbMaleFemale.Value / MAX_LENGHT_SAMPLE) < rnd.NextDouble();
+					var gender = isMale ? true : false;
+
+					Dictionary<string, Range> namesProbablity = (gender) ? namesProbablityMale : namesProbablityFemale;
+
 					string name = null;
 					var k = rnd.NextDouble();
 
@@ -256,11 +272,12 @@ namespace DataBaseGenerator
 
 					if(name == null)
 					{
-						name = faker.Name.FullName();
+						name = faker.Name.FullName((gender)? 
+							Bogus.DataSets.Name.Gender.Male : Bogus.DataSets.Name.Gender.Female);
 					}
 					else
 					{
-						if(DEFAULT_MALE_NAMES.IndexOf(name) >= 0)
+						if(gender)
 						{
 							name += " " + faker.Name.LastName(Bogus.DataSets.Name.Gender.Male);
 						}
