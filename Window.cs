@@ -49,8 +49,29 @@ namespace DataBaseGenerator
 
 		// Максимальная величина выборки данных для генерации
 		public const int MAX_LENGHT_SAMPLE			= 10000;
+
+		// Мужские имена по-умолчанию
 		public List<string> DEFAULT_MALE_NAMES		= new List<string>{ "Михаил", "Максим", "Артём" };
+
+		// Женские имена по-умолчанию
 		public List<string> DEFAULT_FEMALE_NAMES	= new List<string>{ "Мария", "Анна", "Лариса" };
+
+		// Названия жанров по-умолчанию
+		public List<string> DEFAULT_GENRE_NAMES = new List<string> {
+			"Фантастика", "Детектив", "Роман",
+			"Классика", "Триллер", "Поэзия"
+		};
+
+		// ID жанров в текущей базе данных соответствующие определённым названиям по-умолчанию
+		public Dictionary<string, int> DEFAULT_GENRE_ID = new Dictionary<string, int>
+		{
+			["Фантастика"] = 8,
+			["Детектив"] = 9,
+			["Роман"] = 10,
+			["Классика"] = 11,
+			["Триллер"] = 12,
+			["Поэзия"] = 13
+		};
 
 		public _Window()
 		{
@@ -225,8 +246,8 @@ namespace DataBaseGenerator
 
 		private void btnGenerateReader_Click(object sender, EventArgs e)
 		{
-			pbReaderGenerator.Value = 0;
-			pbReaderGenerator.Maximum = (int)numericUpDown1.Value;
+			_pbReaderGenerator.Value = 0;
+			_pbReaderGenerator.Maximum = (int)_nudCountReaders.Value;
 
 			Random rnd = new Random();
 
@@ -251,7 +272,7 @@ namespace DataBaseGenerator
 					["Лариса"]	= _tbNameLarisa,
 				});
 
-				for (var i = 0; i < numericUpDown1.Value; i++)
+				for (var i = 0; i < _nudCountReaders.Value; i++)
 				{
 					var isMale = ((double)_tbMaleFemale.Value / MAX_LENGHT_SAMPLE) < rnd.NextDouble();
 					var gender = isMale ? true : false;
@@ -296,7 +317,7 @@ namespace DataBaseGenerator
 					command.Parameters.AddWithValue("@home_address", @faker.Address.StreetAddress());
 					command.ExecuteNonQuery();
 
-					pbReaderGenerator.Value++;
+					_pbReaderGenerator.Value++;
 				}
 
 				connection.Close();
@@ -337,6 +358,110 @@ namespace DataBaseGenerator
 		{
 			int value = _tbMaleFemale.Value;
 			_lCountManWomen.Text = (MAX_LENGHT_SAMPLE - value).ToString() + "/" + value.ToString();
+		}
+
+		private void _tbCountPagesFrom_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountPagesFrom.Text = _tbCountPagesFrom.Value.ToString();
+		}
+
+		private void _tbCountPagesTo_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountPagesTo.Text = _tbCountPagesTo.Value.ToString();
+		}
+
+		private void _tbGenreFantasy_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountFantasy.Text = _tbGenreFantasy.Value.ToString();
+		}
+
+		private void _tbGenreDetective_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountDetective.Text = _tbGenreDetective.Value.ToString();
+		}
+
+		private void _tbGenreNovel_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountNovel.Text = _tbGenreNovel.Value.ToString();
+		}
+
+		private void _tbGenreClassic_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountClassic.Text = _tbGenreClassic.Value.ToString();
+		}
+
+		private void _tbGenreThriller_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountThriller.Text = _tbGenreThriller.Value.ToString();
+		}
+
+		private void _tbGenrePoetry_ValueChanged(object sender, EventArgs e)
+		{
+			_lCountPoetry.Text = _tbGenrePoetry.Value.ToString();
+		}
+
+		private void _btnGenerateBook_Click(object sender, EventArgs e)
+		{
+			_pbBookGenerator.Value = 0;
+			_pbBookGenerator.Maximum = (int)_nudCountBooks.Value;
+
+			Random rnd = new Random();
+
+			// Подключение библиотеки Faker для генерации произвольных данных
+			var faker = new Faker("ru");
+
+			using (var connection = GetConnection(LOCAL_DATABASE))
+			{
+				connection.Open();
+
+				Dictionary<string, Range> namesGenre = getNamesProbability(new Dictionary<string, TrackBar>
+				{
+					["Фантастика"] = _tbNameMichael,
+					["Детектив"] = _tbNameMaxim,
+					["Роман"] = _tbNameArtem,
+					["Классика"] = _tbGenreClassic,
+					["Триллер"] = _tbGenreThriller,
+					["Поэзия"] = _tbGenrePoetry
+				});
+
+				for (var i = 0; i < _nudCountBooks.Value; i++)
+				{
+					string name = null;
+					var k = rnd.NextDouble();
+
+					foreach (var item in namesGenre)
+					{
+						if (item.Value.CheckContains(k))
+						{
+							name = item.Key;
+							break;
+						}
+					}
+
+					if (name == null)
+					{
+						int index = rnd.Next(0, (DEFAULT_GENRE_NAMES.Count - 1));
+						name = DEFAULT_GENRE_NAMES[index];
+					}
+
+					SqlCommand command = new SqlCommand(
+						"INSERT INTO books VALUES(@register_num, @count_pages, @year_publish, @genres_id)",
+						connection);
+
+					MessageBox.Show(@DEFAULT_GENRE_ID[name].ToString());
+
+					command.Parameters.AddWithValue("@register_num", faker.Random.String2(10, "1234567890"));
+					command.Parameters.AddWithValue("@genres_id", @DEFAULT_GENRE_ID[name].ToString());
+					command.Parameters.AddWithValue("@year_publish", @faker.Random.Number(1800, 2021).ToString());
+					command.Parameters.AddWithValue("@count_pages",
+						@faker.Random.Number(_tbCountPagesFrom.Value, _tbCountPagesTo.Value).ToString());
+					command.ExecuteNonQuery();
+
+					_pbReaderGenerator.Value++;
+				}
+
+				connection.Close();
+			}
 		}
 	}
 }
