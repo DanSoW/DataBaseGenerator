@@ -80,14 +80,10 @@ namespace DataBaseGenerator
 			this.label6 = new System.Windows.Forms.Label();
 			this._nudCountReaders = new System.Windows.Forms.NumericUpDown();
 			this.tabPage5 = new System.Windows.Forms.TabPage();
-			this.label13 = new System.Windows.Forms.Label();
-			this._tbCountPagesFrom = new System.Windows.Forms.TrackBar();
-			this.label14 = new System.Windows.Forms.Label();
-			this._lCountPagesFrom = new System.Windows.Forms.Label();
-			this._lCountPagesTo = new System.Windows.Forms.Label();
-			this.label20 = new System.Windows.Forms.Label();
-			this._tbCountPagesTo = new System.Windows.Forms.TrackBar();
-			this.label18 = new System.Windows.Forms.Label();
+			this._btnGenerateBook = new System.Windows.Forms.Button();
+			this._pbBookGenerator = new System.Windows.Forms.ProgressBar();
+			this.label19 = new System.Windows.Forms.Label();
+			this._nudCountBooks = new System.Windows.Forms.NumericUpDown();
 			this._lCountPoetry = new System.Windows.Forms.Label();
 			this._lCountClassic = new System.Windows.Forms.Label();
 			this._lCountThriller = new System.Windows.Forms.Label();
@@ -106,10 +102,14 @@ namespace DataBaseGenerator
 			this.label31 = new System.Windows.Forms.Label();
 			this._tbGenreDetective = new System.Windows.Forms.TrackBar();
 			this._tbGenreFantasy = new System.Windows.Forms.TrackBar();
-			this._btnGenerateBook = new System.Windows.Forms.Button();
-			this._pbBookGenerator = new System.Windows.Forms.ProgressBar();
-			this.label19 = new System.Windows.Forms.Label();
-			this._nudCountBooks = new System.Windows.Forms.NumericUpDown();
+			this.label18 = new System.Windows.Forms.Label();
+			this._lCountPagesTo = new System.Windows.Forms.Label();
+			this.label20 = new System.Windows.Forms.Label();
+			this._tbCountPagesTo = new System.Windows.Forms.TrackBar();
+			this._lCountPagesFrom = new System.Windows.Forms.Label();
+			this.label14 = new System.Windows.Forms.Label();
+			this._tbCountPagesFrom = new System.Windows.Forms.TrackBar();
+			this.label13 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this._dgvDatabase)).BeginInit();
 			this._tcControl.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -126,15 +126,15 @@ namespace DataBaseGenerator
 			((System.ComponentModel.ISupportInitialize)(this._tbMaleFemale)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._nudCountReaders)).BeginInit();
 			this.tabPage5.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesFrom)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesTo)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._nudCountBooks)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenrePoetry)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreThriller)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreClassic)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreNovel)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreDetective)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreFantasy)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this._nudCountBooks)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesTo)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesFrom)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// _txtQuery
@@ -654,83 +654,43 @@ namespace DataBaseGenerator
 			this.tabPage5.Text = "Генератор книг";
 			this.tabPage5.UseVisualStyleBackColor = true;
 			// 
-			// label13
+			// _btnGenerateBook
 			// 
-			this.label13.AutoSize = true;
-			this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.label13.Location = new System.Drawing.Point(9, 16);
-			this.label13.Name = "label13";
-			this.label13.Size = new System.Drawing.Size(188, 20);
-			this.label13.TabIndex = 8;
-			this.label13.Text = "Количество страниц:";
+			this._btnGenerateBook.Location = new System.Drawing.Point(683, 574);
+			this._btnGenerateBook.Name = "_btnGenerateBook";
+			this._btnGenerateBook.Size = new System.Drawing.Size(130, 37);
+			this._btnGenerateBook.TabIndex = 52;
+			this._btnGenerateBook.Text = "Запуск";
+			this._btnGenerateBook.UseVisualStyleBackColor = true;
+			this._btnGenerateBook.Click += new System.EventHandler(this._btnGenerateBook_Click);
 			// 
-			// _tbCountPagesFrom
+			// _pbBookGenerator
 			// 
-			this._tbCountPagesFrom.Location = new System.Drawing.Point(49, 53);
-			this._tbCountPagesFrom.Maximum = 100;
-			this._tbCountPagesFrom.Minimum = 1;
-			this._tbCountPagesFrom.Name = "_tbCountPagesFrom";
-			this._tbCountPagesFrom.Size = new System.Drawing.Size(217, 56);
-			this._tbCountPagesFrom.TabIndex = 9;
-			this._tbCountPagesFrom.Value = 1;
-			this._tbCountPagesFrom.ValueChanged += new System.EventHandler(this._tbCountPagesFrom_ValueChanged);
+			this._pbBookGenerator.Location = new System.Drawing.Point(13, 574);
+			this._pbBookGenerator.Name = "_pbBookGenerator";
+			this._pbBookGenerator.Size = new System.Drawing.Size(645, 37);
+			this._pbBookGenerator.TabIndex = 51;
 			// 
-			// label14
+			// label19
 			// 
-			this.label14.AutoSize = true;
-			this.label14.Location = new System.Drawing.Point(13, 71);
-			this.label14.Name = "label14";
-			this.label14.Size = new System.Drawing.Size(30, 17);
-			this.label14.TabIndex = 25;
-			this.label14.Text = "От:";
+			this.label19.AutoSize = true;
+			this.label19.Location = new System.Drawing.Point(13, 517);
+			this.label19.Name = "label19";
+			this.label19.Size = new System.Drawing.Size(86, 17);
+			this.label19.TabIndex = 50;
+			this.label19.Text = "Количество";
 			// 
-			// _lCountPagesFrom
+			// _nudCountBooks
 			// 
-			this._lCountPagesFrom.AutoSize = true;
-			this._lCountPagesFrom.Location = new System.Drawing.Point(272, 71);
-			this._lCountPagesFrom.Name = "_lCountPagesFrom";
-			this._lCountPagesFrom.Size = new System.Drawing.Size(16, 17);
-			this._lCountPagesFrom.TabIndex = 26;
-			this._lCountPagesFrom.Text = "1";
-			// 
-			// _lCountPagesTo
-			// 
-			this._lCountPagesTo.AutoSize = true;
-			this._lCountPagesTo.Location = new System.Drawing.Point(758, 71);
-			this._lCountPagesTo.Name = "_lCountPagesTo";
-			this._lCountPagesTo.Size = new System.Drawing.Size(32, 17);
-			this._lCountPagesTo.TabIndex = 29;
-			this._lCountPagesTo.Text = "100";
-			// 
-			// label20
-			// 
-			this.label20.AutoSize = true;
-			this.label20.Location = new System.Drawing.Point(500, 71);
-			this.label20.Name = "label20";
-			this.label20.Size = new System.Drawing.Size(31, 17);
-			this.label20.TabIndex = 28;
-			this.label20.Text = "До:";
-			// 
-			// _tbCountPagesTo
-			// 
-			this._tbCountPagesTo.Location = new System.Drawing.Point(536, 53);
-			this._tbCountPagesTo.Maximum = 10000;
-			this._tbCountPagesTo.Minimum = 100;
-			this._tbCountPagesTo.Name = "_tbCountPagesTo";
-			this._tbCountPagesTo.Size = new System.Drawing.Size(216, 56);
-			this._tbCountPagesTo.TabIndex = 27;
-			this._tbCountPagesTo.Value = 100;
-			this._tbCountPagesTo.ValueChanged += new System.EventHandler(this._tbCountPagesTo_ValueChanged);
-			// 
-			// label18
-			// 
-			this.label18.AutoSize = true;
-			this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-			this.label18.Location = new System.Drawing.Point(9, 144);
-			this.label18.Name = "label18";
-			this.label18.Size = new System.Drawing.Size(176, 20);
-			this.label18.TabIndex = 30;
-			this.label18.Text = "Популярные жанры:";
+			this._nudCountBooks.Location = new System.Drawing.Point(13, 540);
+			this._nudCountBooks.Maximum = new decimal(new int[] {
+            10000,
+            0,
+            0,
+            0});
+			this._nudCountBooks.Name = "_nudCountBooks";
+			this._nudCountBooks.Size = new System.Drawing.Size(120, 22);
+			this._nudCountBooks.TabIndex = 49;
 			// 
 			// _lCountPoetry
 			// 
@@ -888,43 +848,83 @@ namespace DataBaseGenerator
 			this._tbGenreFantasy.TabIndex = 31;
 			this._tbGenreFantasy.ValueChanged += new System.EventHandler(this._tbGenreFantasy_ValueChanged);
 			// 
-			// _btnGenerateBook
+			// label18
 			// 
-			this._btnGenerateBook.Location = new System.Drawing.Point(683, 574);
-			this._btnGenerateBook.Name = "_btnGenerateBook";
-			this._btnGenerateBook.Size = new System.Drawing.Size(130, 37);
-			this._btnGenerateBook.TabIndex = 52;
-			this._btnGenerateBook.Text = "Запуск";
-			this._btnGenerateBook.UseVisualStyleBackColor = true;
-			this._btnGenerateBook.Click += new System.EventHandler(this._btnGenerateBook_Click);
+			this.label18.AutoSize = true;
+			this.label18.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.label18.Location = new System.Drawing.Point(9, 144);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(176, 20);
+			this.label18.TabIndex = 30;
+			this.label18.Text = "Популярные жанры:";
 			// 
-			// _pbBookGenerator
+			// _lCountPagesTo
 			// 
-			this._pbBookGenerator.Location = new System.Drawing.Point(13, 574);
-			this._pbBookGenerator.Name = "_pbBookGenerator";
-			this._pbBookGenerator.Size = new System.Drawing.Size(645, 37);
-			this._pbBookGenerator.TabIndex = 51;
+			this._lCountPagesTo.AutoSize = true;
+			this._lCountPagesTo.Location = new System.Drawing.Point(758, 71);
+			this._lCountPagesTo.Name = "_lCountPagesTo";
+			this._lCountPagesTo.Size = new System.Drawing.Size(24, 17);
+			this._lCountPagesTo.TabIndex = 29;
+			this._lCountPagesTo.Text = "50";
 			// 
-			// label19
+			// label20
 			// 
-			this.label19.AutoSize = true;
-			this.label19.Location = new System.Drawing.Point(13, 517);
-			this.label19.Name = "label19";
-			this.label19.Size = new System.Drawing.Size(86, 17);
-			this.label19.TabIndex = 50;
-			this.label19.Text = "Количество";
+			this.label20.AutoSize = true;
+			this.label20.Location = new System.Drawing.Point(500, 71);
+			this.label20.Name = "label20";
+			this.label20.Size = new System.Drawing.Size(31, 17);
+			this.label20.TabIndex = 28;
+			this.label20.Text = "До:";
 			// 
-			// _nudCountBooks
+			// _tbCountPagesTo
 			// 
-			this._nudCountBooks.Location = new System.Drawing.Point(13, 540);
-			this._nudCountBooks.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-			this._nudCountBooks.Name = "_nudCountBooks";
-			this._nudCountBooks.Size = new System.Drawing.Size(120, 22);
-			this._nudCountBooks.TabIndex = 49;
+			this._tbCountPagesTo.Location = new System.Drawing.Point(536, 53);
+			this._tbCountPagesTo.Maximum = 1000;
+			this._tbCountPagesTo.Minimum = 50;
+			this._tbCountPagesTo.Name = "_tbCountPagesTo";
+			this._tbCountPagesTo.Size = new System.Drawing.Size(216, 56);
+			this._tbCountPagesTo.TabIndex = 27;
+			this._tbCountPagesTo.Value = 100;
+			this._tbCountPagesTo.ValueChanged += new System.EventHandler(this._tbCountPagesTo_ValueChanged);
+			// 
+			// _lCountPagesFrom
+			// 
+			this._lCountPagesFrom.AutoSize = true;
+			this._lCountPagesFrom.Location = new System.Drawing.Point(272, 71);
+			this._lCountPagesFrom.Name = "_lCountPagesFrom";
+			this._lCountPagesFrom.Size = new System.Drawing.Size(16, 17);
+			this._lCountPagesFrom.TabIndex = 26;
+			this._lCountPagesFrom.Text = "1";
+			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.Location = new System.Drawing.Point(13, 71);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(30, 17);
+			this.label14.TabIndex = 25;
+			this.label14.Text = "От:";
+			// 
+			// _tbCountPagesFrom
+			// 
+			this._tbCountPagesFrom.Location = new System.Drawing.Point(49, 53);
+			this._tbCountPagesFrom.Maximum = 50;
+			this._tbCountPagesFrom.Minimum = 1;
+			this._tbCountPagesFrom.Name = "_tbCountPagesFrom";
+			this._tbCountPagesFrom.Size = new System.Drawing.Size(217, 56);
+			this._tbCountPagesFrom.TabIndex = 9;
+			this._tbCountPagesFrom.Value = 1;
+			this._tbCountPagesFrom.ValueChanged += new System.EventHandler(this._tbCountPagesFrom_ValueChanged);
+			// 
+			// label13
+			// 
+			this.label13.AutoSize = true;
+			this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+			this.label13.Location = new System.Drawing.Point(9, 16);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(188, 20);
+			this.label13.TabIndex = 8;
+			this.label13.Text = "Количество страниц:";
 			// 
 			// _Window
 			// 
@@ -956,15 +956,15 @@ namespace DataBaseGenerator
 			((System.ComponentModel.ISupportInitialize)(this._nudCountReaders)).EndInit();
 			this.tabPage5.ResumeLayout(false);
 			this.tabPage5.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesFrom)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesTo)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._nudCountBooks)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenrePoetry)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreThriller)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreClassic)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreNovel)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreDetective)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreFantasy)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this._nudCountBooks)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesTo)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesFrom)).EndInit();
 			this.ResumeLayout(false);
 
 		}

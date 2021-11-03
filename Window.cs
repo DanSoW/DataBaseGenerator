@@ -445,19 +445,18 @@ namespace DataBaseGenerator
 					}
 
 					SqlCommand command = new SqlCommand(
-						"INSERT INTO books VALUES(@register_num, @count_pages, @year_publish, @genres_id)",
+						"INSERT INTO books VALUES(@genres_id, @register_num, @count_pages, @year_publish)",
 						connection);
 
-					MessageBox.Show(@DEFAULT_GENRE_ID[name].ToString());
-
-					command.Parameters.AddWithValue("@register_num", faker.Random.String2(10, "1234567890"));
 					command.Parameters.AddWithValue("@genres_id", @DEFAULT_GENRE_ID[name].ToString());
-					command.Parameters.AddWithValue("@year_publish", @faker.Random.Number(1800, 2021).ToString());
+					command.Parameters.AddWithValue("@register_num", faker.Random.String2(10, "1234567890"));
 					command.Parameters.AddWithValue("@count_pages",
 						@faker.Random.Number(_tbCountPagesFrom.Value, _tbCountPagesTo.Value).ToString());
+					command.Parameters.AddWithValue("@year_publish", @faker.Random.Number(1800, 2021).ToString());
+					
 					command.ExecuteNonQuery();
 
-					_pbReaderGenerator.Value++;
+					_pbBookGenerator.Value++;
 				}
 
 				connection.Close();
