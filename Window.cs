@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Bogus;
@@ -72,6 +73,9 @@ namespace DataBaseGenerator
 			["Триллер"] = 12,
 			["Поэзия"] = 13
 		};
+
+		CancellationTokenSource _readerGeneratorCancellationToken = null;
+		CancellationTokenSource _bookGeneratorCancellationToken = null;
 
 		public _Window()
 		{
@@ -244,37 +248,26 @@ namespace DataBaseGenerator
 			return namesProbablity;
 		}
 
-		private void btnGenerateReader_Click(object sender, EventArgs e)
+		private void GenerateReaders(SqlConnection connection, 
+			Dictionary<string, Range> namesProbablityMale,
+			Dictionary<string, Range> namesProbablityFemale,
+			int count,
+			int maleFemale,
+			IProgress<int> progress,
+			CancellationTokenSource cancellationToken)
 		{
-			_pbReaderGenerator.Value = 0;
-			_pbReaderGenerator.Maximum = (int)_nudCountReaders.Value;
-
 			Random rnd = new Random();
 
 			// Подключение библиотеки Faker для генерации произвольных данных
 			var faker = new Faker("ru");
 
-			using (var connection = GetConnection(LOCAL_DATABASE))
+			using (connection)
 			{
 				connection.Open();
 
-				Dictionary<string, Range> namesProbablityMale = getNamesProbability(new Dictionary<string, TrackBar>
+				for (var i = 0; i < count; i++)
 				{
-					["Михаил"]	= _tbNameMichael,
-					["Максим"]	= _tbNameMaxim,
-					["Артем"]	= _tbNameArtem,
-				});
-
-				Dictionary<string, Range> namesProbablityFemale = getNamesProbability(new Dictionary<string, TrackBar>
-				{
-					["Мария"]	= _tbNameMaria,
-					["Анна"]	= _tbNameAnna,
-					["Лариса"]	= _tbNameLarisa,
-				});
-
-				for (var i = 0; i < _nudCountReaders.Value; i++)
-				{
-					var isMale = ((double)_tbMaleFemale.Value / MAX_LENGHT_SAMPLE) < rnd.NextDouble();
+					var isMale = ((double)maleFemale / MAX_LENGHT_SAMPLE) < rnd.NextDouble();
 					var gender = isMale ? true : false;
 
 					Dictionary<string, Range> namesProbablity = (gender) ? namesProbablityMale : namesProbablityFemale;
@@ -282,7 +275,7 @@ namespace DataBaseGenerator
 					string name = null;
 					var k = rnd.NextDouble();
 
-					foreach(var item in namesProbablity)
+					foreach (var item in namesProbablity)
 					{
 						if (item.Value.CheckContains(k))
 						{
@@ -291,14 +284,14 @@ namespace DataBaseGenerator
 						}
 					}
 
-					if(name == null)
+					if (name == null)
 					{
-						name = faker.Name.FullName((gender)? 
+						name = faker.Name.FullName((gender) ?
 							Bogus.DataSets.Name.Gender.Male : Bogus.DataSets.Name.Gender.Female);
 					}
 					else
 					{
-						if(gender)
+						if (gender)
 						{
 							name += " " + faker.Name.LastName(Bogus.DataSets.Name.Gender.Male);
 						}
@@ -309,7 +302,7 @@ namespace DataBaseGenerator
 					}
 
 					SqlCommand command = new SqlCommand(
-						"INSERT INTO readers VALUES(@password_data, @full_name, @home_address)", 
+						"INSERT INTO readers VALUES(@password_data, @full_name, @home_address)",
 						connection);
 
 					command.Parameters.AddWithValue("@password_data", faker.Random.String2(10, "1234567890"));
@@ -317,11 +310,69 @@ namespace DataBaseGenerator
 					command.Parameters.AddWithValue("@home_address", @faker.Address.StreetAddress());
 					command.ExecuteNonQuery();
 
-					_pbReaderGenerator.Value++;
+					progress?.Report(i + 1);
+
+					if (cancellationToken.IsCancellationRequested)
+					{
+						return;
+					}
+
+					Thread.Sleep(300);
 				}
 
 				connection.Close();
 			}
+		}
+
+		private async void btnGenerateReader_Click(object sender, EventArgs e)
+		{
+			if (_readerGeneratorCancellationToken != null)
+			{
+				_readerGeneratorCancellationToken.Cancel();
+				return;
+			}
+
+			_readerGeneratorCancellationToken = new CancellationTokenSource();
+
+			var connection = GetConnection(LOCAL_DATABASE);
+			_pbReaderGenerator.Value = 0;
+			_pbReaderGenerator.Maximum = (int)_nudCountReaders.Value;
+
+			Dictionary<string, Range> namesProbablityMale = getNamesProbability(new Dictionary<string, TrackBar>
+			{
+				["Михаил"] = _tbNameMichael,
+				["Максим"] = _tbNameMaxim,
+				["Артем"] = _tbNameArtem,
+			});
+
+			Dictionary<string, Range> namesProbablityFemale = getNamesProbability(new Dictionary<string, TrackBar>
+			{
+				["Мария"] = _tbNameMaria,
+				["Анна"] = _tbNameAnna,
+				["Лариса"] = _tbNameLarisa,
+			});
+
+			var progress = new Progress<int>(value =>
+			{
+				_pbReaderGenerator.Value = value;
+			});
+
+			var count = (int)_nudCountReaders.Value;
+			var maleFemale = _tbMaleFemale.Value;
+
+			_btnGenerateReader.Text = "Отмена";
+
+			await Task.Run(() =>
+			{
+				GenerateReaders(connection, namesProbablityMale,
+					namesProbablityFemale, count,
+					maleFemale, progress,
+					_readerGeneratorCancellationToken);
+			});
+
+			_btnGenerateReader.Text = "Запустить";
+			_readerGeneratorCancellationToken.Dispose();
+			_readerGeneratorCancellationToken = null;
 		}
 
 		private void _tbNameMichael_ValueChanged(object sender, EventArgs e)
@@ -400,31 +451,25 @@ namespace DataBaseGenerator
 			_lCountPoetry.Text = _tbGenrePoetry.Value.ToString();
 		}
 
-		private void _btnGenerateBook_Click(object sender, EventArgs e)
+		private void GenerateBooks(
+			SqlConnection connection,
+			Dictionary<string, Range> namesGenre,
+			int count,
+			int countPagesFrom,
+			int countPagesTo,
+			IProgress<int> progress,
+			CancellationTokenSource cancellationToken)
 		{
-			_pbBookGenerator.Value = 0;
-			_pbBookGenerator.Maximum = (int)_nudCountBooks.Value;
-
 			Random rnd = new Random();
 
 			// Подключение библиотеки Faker для генерации произвольных данных
 			var faker = new Faker("ru");
 
-			using (var connection = GetConnection(LOCAL_DATABASE))
+			using (connection)
 			{
 				connection.Open();
 
-				Dictionary<string, Range> namesGenre = getNamesProbability(new Dictionary<string, TrackBar>
-				{
-					["Фантастика"] = _tbNameMichael,
-					["Детектив"] = _tbNameMaxim,
-					["Роман"] = _tbNameArtem,
-					["Классика"] = _tbGenreClassic,
-					["Триллер"] = _tbGenreThriller,
-					["Поэзия"] = _tbGenrePoetry
-				});
-
-				for (var i = 0; i < _nudCountBooks.Value; i++)
+				for (var i = 0; i < count; i++)
 				{
 					string name = null;
 					var k = rnd.NextDouble();
@@ -451,16 +496,74 @@ namespace DataBaseGenerator
 					command.Parameters.AddWithValue("@genres_id", @DEFAULT_GENRE_ID[name].ToString());
 					command.Parameters.AddWithValue("@register_num", faker.Random.String2(10, "1234567890"));
 					command.Parameters.AddWithValue("@count_pages",
-						@faker.Random.Number(_tbCountPagesFrom.Value, _tbCountPagesTo.Value).ToString());
+						@faker.Random.Number(countPagesFrom, countPagesTo).ToString());
 					command.Parameters.AddWithValue("@year_publish", @faker.Random.Number(1800, 2021).ToString());
-					
+
 					command.ExecuteNonQuery();
 
-					_pbBookGenerator.Value++;
+					progress?.Report(i + 1);
+
+					if (cancellationToken.IsCancellationRequested)
+					{
+						return;
+					}
+
+					Thread.Sleep(300);
 				}
 
 				connection.Close();
 			}
+		}
+
+		private async void _btnGenerateBook_Click(object sender, EventArgs e)
+		{
+			if (_bookGeneratorCancellationToken != null)
+			{
+				_bookGeneratorCancellationToken.Cancel();
+				return;
+			}
+
+			_bookGeneratorCancellationToken = new CancellationTokenSource();
+
+			var connection = GetConnection(LOCAL_DATABASE);
+
+			_pbBookGenerator.Value = 0;
+			_pbBookGenerator.Maximum = (int)_nudCountBooks.Value;
+
+			Dictionary<string, Range> namesGenre = getNamesProbability(new Dictionary<string, TrackBar>
+			{
+				["Фантастика"] = _tbNameMichael,
+				["Детектив"] = _tbNameMaxim,
+				["Роман"] = _tbNameArtem,
+				["Классика"] = _tbGenreClassic,
+				["Триллер"] = _tbGenreThriller,
+				["Поэзия"] = _tbGenrePoetry
+			});
+
+			var count = (int)_nudCountBooks.Value;
+			var countPagesFrom = _tbCountPagesFrom.Value;
+			var countPagesTo = _tbCountPagesTo.Value;
+
+			var progress = new Progress<int>(value =>
+			{
+				_pbBookGenerator.Value = value;
+			});
+
+			_btnGenerateBook.Text = "Отмена";
+
+			await Task.Run(() =>
+			{
+				GenerateBooks(
+					connection,
+					namesGenre,
+					count, countPagesFrom,
+					countPagesTo, progress,
+					_bookGeneratorCancellationToken);
+			});
+
+			_btnGenerateBook.Text = "Запустить";
+			_bookGeneratorCancellationToken.Dispose();
+			_bookGeneratorCancellationToken = null;
 		}
 	}
 }
