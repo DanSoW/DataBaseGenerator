@@ -110,6 +110,10 @@ namespace DataBaseGenerator
 			this.label14 = new System.Windows.Forms.Label();
 			this._tbCountPagesFrom = new System.Windows.Forms.TrackBar();
 			this.label13 = new System.Windows.Forms.Label();
+			this.panel1 = new System.Windows.Forms.Panel();
+			this.label21 = new System.Windows.Forms.Label();
+			this._lblStatistics = new System.Windows.Forms.Label();
+			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			((System.ComponentModel.ISupportInitialize)(this._dgvDatabase)).BeginInit();
 			this._tcControl.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -135,6 +139,7 @@ namespace DataBaseGenerator
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreFantasy)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesTo)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesFrom)).BeginInit();
+			this.panel1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// _txtQuery
@@ -926,11 +931,46 @@ namespace DataBaseGenerator
 			this.label13.TabIndex = 8;
 			this.label13.Text = "Количество страниц:";
 			// 
+			// panel1
+			// 
+			this.panel1.Controls.Add(this._lblStatistics);
+			this.panel1.Controls.Add(this.label21);
+			this.panel1.Location = new System.Drawing.Point(877, 38);
+			this.panel1.Name = "panel1";
+			this.panel1.Size = new System.Drawing.Size(388, 787);
+			this.panel1.TabIndex = 7;
+			// 
+			// label21
+			// 
+			this.label21.AutoSize = true;
+			this.label21.Font = new System.Drawing.Font("Microsoft Sans Serif", 17F);
+			this.label21.Location = new System.Drawing.Point(118, 28);
+			this.label21.Name = "label21";
+			this.label21.Size = new System.Drawing.Size(169, 33);
+			this.label21.TabIndex = 0;
+			this.label21.Text = "Статистика";
+			// 
+			// _lblStatistics
+			// 
+			this._lblStatistics.AutoSize = true;
+			this._lblStatistics.Location = new System.Drawing.Point(31, 85);
+			this._lblStatistics.Name = "_lblStatistics";
+			this._lblStatistics.Size = new System.Drawing.Size(78, 17);
+			this._lblStatistics.TabIndex = 1;
+			this._lblStatistics.Text = "lblStatistics";
+			// 
+			// timer1
+			// 
+			this.timer1.Enabled = true;
+			this.timer1.Interval = 1000;
+			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+			// 
 			// _Window
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(847, 841);
+			this.ClientSize = new System.Drawing.Size(1277, 841);
+			this.Controls.Add(this.panel1);
 			this.Controls.Add(this.tabControl1);
 			this.Controls.Add(this._tcControl);
 			this.Name = "_Window";
@@ -965,6 +1005,8 @@ namespace DataBaseGenerator
 			((System.ComponentModel.ISupportInitialize)(this._tbGenreFantasy)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesTo)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this._tbCountPagesFrom)).EndInit();
+			this.panel1.ResumeLayout(false);
+			this.panel1.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -1050,6 +1092,10 @@ namespace DataBaseGenerator
 		private System.Windows.Forms.ProgressBar _pbBookGenerator;
 		private System.Windows.Forms.Label label19;
 		private System.Windows.Forms.NumericUpDown _nudCountBooks;
+		private System.Windows.Forms.Panel panel1;
+		private System.Windows.Forms.Label _lblStatistics;
+		private System.Windows.Forms.Label label21;
+		private System.Windows.Forms.Timer timer1;
 	}
 }
 

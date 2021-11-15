@@ -565,5 +565,110 @@ namespace DataBaseGenerator
 			_bookGeneratorCancellationToken.Dispose();
 			_bookGeneratorCancellationToken = null;
 		}
+
+		private Statistics GetStatistics(SqlConnection connection)
+		{
+			var statistics = new Statistics();
+
+			using (connection)
+			{
+				connection.Open();
+
+				var command = new SqlCommand("SELECT count(*) FROM books", connection);
+				statistics.booksCount = (int)command.ExecuteScalar();
+
+				command = new SqlCommand("SELECT books.genres_id, genres.title, count(*) as count FROM books" +
+						" INNER JOIN genres ON books.genres_id = genres.id GROUP BY books.genres_id, genres.title", connection);
+
+				statistics.booksCountByGenre = new Dictionary<string, int>();
+
+				using(var reader = command.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						statistics.booksCountByGenre[reader.GetString(1)] = reader.GetInt32(2);
+					}
+				}
+
+				command = new SqlCommand("SELECT count(*) FROM readers", connection);
+				statistics.readersCount = (int)command.ExecuteScalar();
+
+				command = new SqlCommand("SELECT 'Михаил' as name, SUM(count) as count FROM (SELECT (SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE (SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+					"= 'Михаил' GROUP BY full_name) AS T " +
+					"UNION SELECT 'Максим' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " + 
+					" = 'Максим' GROUP BY full_name) AS T UNION SELECT 'Артём' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+					"= 'Артём' GROUP BY full_name) AS T UNION SELECT 'Мария' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+					"= 'Мария' GROUP BY full_name) AS T UNION SELECT 'Анна' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+					"= 'Анна' GROUP BY full_name) AS T UNION SELECT 'Лариса' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+					"= 'Лариса' GROUP BY full_name) AS T; ", connection);
+
+				statistics.readersCountByName = new Dictionary<string, int>();
+
+				using (var reader = command.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						statistics.readersCountByName[reader.GetString(0)] = reader.GetInt32(1);
+					}
+				}
+
+				connection.Close();
+			}
+
+			return statistics;
+		}
+
+		private async void timer1_Tick(object sender, EventArgs e)
+		{
+			var connection = GetConnection(LOCAL_DATABASE);
+			Statistics statistics = await Task.Run(() =>
+			{
+				return GetStatistics(connection);
+			});
+
+			var genresInfo = String.Join(
+				"\n",
+				statistics.booksCountByGenre
+				.Select(x => x.Key)
+				.OrderBy(x => x)
+				.Select(x => $" - {x}: {statistics.booksCountByGenre[x]}")
+			);
+
+			var namesInfo = String.Join(
+				"\n",
+				statistics.readersCountByName
+				.Select(x => x.Key)
+				.OrderBy(x => x)
+				.Select(x => $" - {x}: {statistics.readersCountByName[x]}")
+				);
+
+			_lblStatistics.Text = $"Общее количество книг: {statistics.booksCount}\n"
+				+ $"{genresInfo}" + "\n----------------------------\n"
+				+ $"Общее число читателей: {statistics.readersCount}\n"
+				+ $"{namesInfo}";
+		}
+	}
+
+	public class Statistics
+	{
+		/// <summary>
+		/// Количество читателей
+		/// </summary>
+		public int readersCount;
+
+		/// <summary>
+		/// Количество книг
+		/// </summary>
+		public int booksCount;
+
+		/// <summary>
+		/// Количество книг по жанрам
+		/// </summary>
+		public Dictionary<string, int> booksCountByGenre;
+
+		/// <summary>
+		/// Количество читателей по имени
+		/// </summary>
+		public Dictionary<string, int> readersCountByName;
 	}
 }
