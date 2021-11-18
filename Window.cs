@@ -74,6 +74,9 @@ namespace DataBaseGenerator
 			["Поэзия"] = 13
 		};
 
+		/// <summary>
+		/// Определение токенов отмены для генераций читателей и книг
+		/// </summary>
 		CancellationTokenSource _readerGeneratorCancellationToken = null;
 		CancellationTokenSource _bookGeneratorCancellationToken = null;
 
@@ -101,14 +104,23 @@ namespace DataBaseGenerator
 			{
 				using (SqlConnection connection = new SqlConnection())
 				{
+					// Добавление строки подключения
 					connection.ConnectionString = _sqlConnectionString.ToString();
+
+					// Открытие подключения
 					connection.Open();
 
+					// Определение SQL-команды
 					SqlCommand command = new SqlCommand(_txtQuery.Text, connection);
+
+					// Чтение данных из базы данных
 					using (var reader = command.ExecuteReader())
 					{
 						DataTable table = new DataTable();
+						// Загрузка всех считанных данных в таблицу
 						table.Load(reader);
+
+						// Определение источника данных для таблицы
 						_dgvDatabase.DataSource = table;
 
 						reader.Close();
@@ -215,6 +227,11 @@ namespace DataBaseGenerator
 			_sqlConnectionString.UserID = @_txtNameUser.Text;
 		}
 
+		/// <summary>
+		/// Получение экземпляра объекта SqlConnection по строке подключения connect
+		/// </summary>
+		/// <param name="connect">Строка подключения</param>
+		/// <returns>Экземпляр объекта SqlConnection</returns>
 		private SqlConnection GetConnection(string connect)
 		{
 			SqlConnection connection = new SqlConnection();
@@ -223,6 +240,11 @@ namespace DataBaseGenerator
 			return connection;
 		}
 
+		/// <summary>
+		/// Получение множества вероятностей появления определённого имени в текущей генерации
+		/// </summary>
+		/// <param name="names">Значения увеличивающие степень вероятности каждого имени</param>
+		/// <returns>Множество вероятностей</returns>
 		private Dictionary<string, Range> getNamesProbability(Dictionary<string, TrackBar> names)
 		{
 			int totalNames = names.Values.Sum(tb => tb.Value);
@@ -248,6 +270,17 @@ namespace DataBaseGenerator
 			return namesProbablity;
 		}
 
+		/// <summary>
+		/// Генерация читателей
+		/// </summary>
+		/// <param name="connection">Строка подключения</param>
+		/// <param name="namesProbablityMale">Множество вероятностей для читателей мужского пола</param>
+		/// <param name="namesProbablityFemale">Множество вероятностей для читателей женского пола</param>
+		/// <param name="count">Количество данных, которое необходимо сгенерировать</param>
+		/// <param name="maleFemale">Соотношение мужчин и женщин</param>
+		/// <param name="checkedTransaction">Добавить в транзакцию</param>
+		/// <param name="progress">Progress для визуализации процесса генерации</param>
+		/// <param name="cancellationToken">Токен отмены</param>
 		private void GenerateReaders(SqlConnection connection, 
 			Dictionary<string, Range> namesProbablityMale,
 			Dictionary<string, Range> namesProbablityFemale,
@@ -257,6 +290,7 @@ namespace DataBaseGenerator
 			IProgress<ProgressInfo> progress,
 			CancellationTokenSource cancellationToken)
 		{
+			// Объект для работы с псевдослучайными числами
 			Random rnd = new Random();
 
 			// Подключение библиотеки Faker для генерации произвольных данных
@@ -265,10 +299,13 @@ namespace DataBaseGenerator
 			using (connection)
 			{
 				connection.Open();
+
+				// Данные в транзакцию попадают только при активном флаге checkedTransaction
 				var transaction = checkedTransaction ? connection.BeginTransaction() : null;
 
 				for (var i = 0; i < count; i++)
 				{
+					// Вычисление вероятности выбора мужчины или женщины
 					var isMale = ((double)maleFemale / MAX_LENGHT_SAMPLE) < rnd.NextDouble();
 					var gender = isMale ? true : false;
 
@@ -288,6 +325,7 @@ namespace DataBaseGenerator
 
 					if (name == null)
 					{
+						// Генерация данных с помощью объекта Bogus
 						name = faker.Name.FullName((gender) ?
 							Bogus.DataSets.Name.Gender.Male : Bogus.DataSets.Name.Gender.Female);
 					}
@@ -303,10 +341,12 @@ namespace DataBaseGenerator
 						}
 					}
 
+					// Формирование SQL-команды
 					SqlCommand command = new SqlCommand(
 						"INSERT INTO readers VALUES(@password_data, @full_name, @home_address)",
 						connection);
 
+					// Добавление параметров в SQL-команду
 					command.Parameters.AddWithValue("@password_data", faker.Random.String2(10, "1234567890"));
 					command.Parameters.AddWithValue("@full_name", @name);
 					command.Parameters.AddWithValue("@home_address", @faker.Address.StreetAddress());
@@ -328,6 +368,7 @@ namespace DataBaseGenerator
 					var info = (transaction != null) ? $"Читателей в транзакции: {command.ExecuteScalar()}"
 						: $"Количество читателей: {command.ExecuteScalar()}";
 
+					// Добавление элемента Progress
 					progress?.Report(new ProgressInfo
 					{
 						value = i + 1,
@@ -342,25 +383,34 @@ namespace DataBaseGenerator
 					Thread.Sleep(50);
 				}
 
+				// Коммит транзакций (если transaction != null)
 				transaction?.Commit();
 				connection.Close();
 			}
 		}
 
+		/// <summary>
+		/// Генерация читателей
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private async void btnGenerateReader_Click(object sender, EventArgs e)
 		{
 			if (_readerGeneratorCancellationToken != null)
 			{
+				// Отмена выполнения генерации (активация токена отмены)
 				_readerGeneratorCancellationToken.Cancel();
 				return;
 			}
 
+			// Определение токена отмены
 			_readerGeneratorCancellationToken = new CancellationTokenSource();
 
 			var connection = GetConnection(LOCAL_DATABASE);
 			_pbReaderGenerator.Value = 0;
 			_pbReaderGenerator.Maximum = (int)_nudCountReaders.Value;
 
+			// Определение множество вероятностей выбора одного из мужских имён
 			Dictionary<string, Range> namesProbablityMale = getNamesProbability(new Dictionary<string, TrackBar>
 			{
 				["Михаил"] = _tbNameMichael,
@@ -368,6 +418,7 @@ namespace DataBaseGenerator
 				["Артем"] = _tbNameArtem,
 			});
 
+			// Определение множество вероятностей выбора одного из женских имён
 			Dictionary<string, Range> namesProbablityFemale = getNamesProbability(new Dictionary<string, TrackBar>
 			{
 				["Мария"] = _tbNameMaria,
@@ -375,11 +426,7 @@ namespace DataBaseGenerator
 				["Лариса"] = _tbNameLarisa,
 			});
 
-			/*var progress = new Progress<int>(value =>
-			{
-				_pbReaderGenerator.Value = value;
-			});*/
-
+			// Определение Progress
 			var progress = new Progress<ProgressInfo>(prog =>
 			{
 				_pbReaderGenerator.Value = prog.value;
@@ -390,9 +437,11 @@ namespace DataBaseGenerator
 			var maleFemale = _tbMaleFemale.Value;
 			var checkedTransaction = _cbReaderToTransact.Checked;
 
+			// Конвертация поведения элементов управления
 			_btnGenerateReader.Text = "Отмена";
 			_cbReaderToTransact.Enabled = false;
 
+			// Запуск новой задачи (в другом потоке) с ожиданием выполнения
 			await Task.Run(() =>
 			{
 				GenerateReaders(connection, namesProbablityMale,
@@ -484,6 +533,17 @@ namespace DataBaseGenerator
 			_lCountPoetry.Text = _tbGenrePoetry.Value.ToString();
 		}
 
+		/// <summary>
+		/// Генерация книг
+		/// </summary>
+		/// <param name="connection">Строка подключения</param>
+		/// <param name="namesGenre">Множество вероятностей выбора одного из жанра для книги</param>
+		/// <param name="count">Количество генерируемых книг</param>
+		/// <param name="checkedTransact">Добавить в транзакцию</param>
+		/// <param name="countPagesFrom">Количество страниц (от скольки страниц)</param>
+		/// <param name="countPagesTo">Количество страниц (до скольки страниц)</param>
+		/// <param name="progress">Progress для визуализации процесса генерации</param>
+		/// <param name="cancellationToken">Токен отмены</param>
 		private void GenerateBooks(
 			SqlConnection connection,
 			Dictionary<string, Range> namesGenre,
@@ -572,6 +632,11 @@ namespace DataBaseGenerator
 			}
 		}
 
+		/// <summary>
+		/// Генерация книг
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private async void _btnGenerateBook_Click(object sender, EventArgs e)
 		{
 			if (_bookGeneratorCancellationToken != null)
@@ -602,11 +667,6 @@ namespace DataBaseGenerator
 			var countPagesTo = _tbCountPagesTo.Value;
 			var checkedTransact = _cbBooksToTransact.Checked;
 
-			/*var progress = new Progress<int>(value =>
-			{
-				_pbBookGenerator.Value = value;
-			});*/
-
 			var progress = new Progress<ProgressInfo>(prog =>
 			{
 				_pbBookGenerator.Value = prog.value;
@@ -632,6 +692,11 @@ namespace DataBaseGenerator
 			_cbBooksToTransact.Enabled = true;
 		}
 
+		/// <summary>
+		/// Получение статистики из базы данных
+		/// </summary>
+		/// <param name="connection">Строка подключения</param>
+		/// <returns>Экземпляр структуры Statistics</returns>
 		private Statistics GetStatistics(SqlConnection connection)
 		{
 			var statistics = new Statistics();
@@ -690,6 +755,11 @@ namespace DataBaseGenerator
 			return statistics;
 		}
 
+		/// <summary>
+		/// Процесс получения статистики по базе данных каждый тик таймера
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private async void timer1_Tick(object sender, EventArgs e)
 		{
 			var connection = GetConnection(LOCAL_DATABASE);
@@ -721,6 +791,9 @@ namespace DataBaseGenerator
 		}
 	}
 
+	/// <summary>
+	/// Класс для хранения статистики по базе данных
+	/// </summary>
 	public class Statistics
 	{
 		/// <summary>
@@ -744,6 +817,9 @@ namespace DataBaseGenerator
 		public Dictionary<string, int> readersCountByName;
 	}
 
+	/// <summary>
+	/// Класс для хранения данных по Progress
+	/// </summary>
 	public struct ProgressInfo
 	{
 		public int value;
