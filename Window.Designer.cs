@@ -52,6 +52,8 @@ namespace DataBaseGenerator
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
+			this._cbReaderToTransact = new System.Windows.Forms.CheckBox();
+			this._lblRealReaderCounts = new System.Windows.Forms.Label();
 			this._lCountManWomen = new System.Windows.Forms.Label();
 			this._lCountLarisa = new System.Windows.Forms.Label();
 			this._lCountMaria = new System.Windows.Forms.Label();
@@ -111,9 +113,11 @@ namespace DataBaseGenerator
 			this._tbCountPagesFrom = new System.Windows.Forms.TrackBar();
 			this.label13 = new System.Windows.Forms.Label();
 			this.panel1 = new System.Windows.Forms.Panel();
-			this.label21 = new System.Windows.Forms.Label();
 			this._lblStatistics = new System.Windows.Forms.Label();
+			this.label21 = new System.Windows.Forms.Label();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
+			this._cbBooksToTransact = new System.Windows.Forms.CheckBox();
+			this._lbRealBooksCount = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this._dgvDatabase)).BeginInit();
 			this._tcControl.SuspendLayout();
 			this.tabPage1.SuspendLayout();
@@ -345,6 +349,8 @@ namespace DataBaseGenerator
 			// 
 			// tabPage4
 			// 
+			this.tabPage4.Controls.Add(this._cbReaderToTransact);
+			this.tabPage4.Controls.Add(this._lblRealReaderCounts);
 			this.tabPage4.Controls.Add(this._lCountManWomen);
 			this.tabPage4.Controls.Add(this._lCountLarisa);
 			this.tabPage4.Controls.Add(this._lCountMaria);
@@ -379,6 +385,24 @@ namespace DataBaseGenerator
 			this.tabPage4.TabIndex = 1;
 			this.tabPage4.Text = "Генератор читателей";
 			this.tabPage4.UseVisualStyleBackColor = true;
+			// 
+			// _cbReaderToTransact
+			// 
+			this._cbReaderToTransact.AutoSize = true;
+			this._cbReaderToTransact.Location = new System.Drawing.Point(152, 510);
+			this._cbReaderToTransact.Name = "_cbReaderToTransact";
+			this._cbReaderToTransact.Size = new System.Drawing.Size(194, 21);
+			this._cbReaderToTransact.TabIndex = 32;
+			this._cbReaderToTransact.Text = "Добавлять в транзакции";
+			this._cbReaderToTransact.UseVisualStyleBackColor = true;
+			// 
+			// _lblRealReaderCounts
+			// 
+			this._lblRealReaderCounts.AutoSize = true;
+			this._lblRealReaderCounts.Location = new System.Drawing.Point(319, 553);
+			this._lblRealReaderCounts.Name = "_lblRealReaderCounts";
+			this._lblRealReaderCounts.Size = new System.Drawing.Size(0, 17);
+			this._lblRealReaderCounts.TabIndex = 31;
 			// 
 			// _lCountManWomen
 			// 
@@ -622,6 +646,8 @@ namespace DataBaseGenerator
 			// 
 			// tabPage5
 			// 
+			this.tabPage5.Controls.Add(this._lbRealBooksCount);
+			this.tabPage5.Controls.Add(this._cbBooksToTransact);
 			this.tabPage5.Controls.Add(this._btnGenerateBook);
 			this.tabPage5.Controls.Add(this._pbBookGenerator);
 			this.tabPage5.Controls.Add(this.label19);
@@ -940,6 +966,15 @@ namespace DataBaseGenerator
 			this.panel1.Size = new System.Drawing.Size(388, 787);
 			this.panel1.TabIndex = 7;
 			// 
+			// _lblStatistics
+			// 
+			this._lblStatistics.AutoSize = true;
+			this._lblStatistics.Location = new System.Drawing.Point(31, 85);
+			this._lblStatistics.Name = "_lblStatistics";
+			this._lblStatistics.Size = new System.Drawing.Size(78, 17);
+			this._lblStatistics.TabIndex = 1;
+			this._lblStatistics.Text = "lblStatistics";
+			// 
 			// label21
 			// 
 			this.label21.AutoSize = true;
@@ -950,20 +985,29 @@ namespace DataBaseGenerator
 			this.label21.TabIndex = 0;
 			this.label21.Text = "Статистика";
 			// 
-			// _lblStatistics
-			// 
-			this._lblStatistics.AutoSize = true;
-			this._lblStatistics.Location = new System.Drawing.Point(31, 85);
-			this._lblStatistics.Name = "_lblStatistics";
-			this._lblStatistics.Size = new System.Drawing.Size(78, 17);
-			this._lblStatistics.TabIndex = 1;
-			this._lblStatistics.Text = "lblStatistics";
-			// 
 			// timer1
 			// 
 			this.timer1.Enabled = true;
 			this.timer1.Interval = 1000;
 			this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+			// 
+			// _cbBooksToTransact
+			// 
+			this._cbBooksToTransact.AutoSize = true;
+			this._cbBooksToTransact.Location = new System.Drawing.Point(150, 540);
+			this._cbBooksToTransact.Name = "_cbBooksToTransact";
+			this._cbBooksToTransact.Size = new System.Drawing.Size(186, 21);
+			this._cbBooksToTransact.TabIndex = 53;
+			this._cbBooksToTransact.Text = "Добавить в транзакции";
+			this._cbBooksToTransact.UseVisualStyleBackColor = true;
+			// 
+			// _lbRealBooksCount
+			// 
+			this._lbRealBooksCount.AutoSize = true;
+			this._lbRealBooksCount.Location = new System.Drawing.Point(321, 584);
+			this._lbRealBooksCount.Name = "_lbRealBooksCount";
+			this._lbRealBooksCount.Size = new System.Drawing.Size(0, 17);
+			this._lbRealBooksCount.TabIndex = 54;
 			// 
 			// _Window
 			// 
@@ -1096,6 +1140,10 @@ namespace DataBaseGenerator
 		private System.Windows.Forms.Label _lblStatistics;
 		private System.Windows.Forms.Label label21;
 		private System.Windows.Forms.Timer timer1;
+		private System.Windows.Forms.Label _lblRealReaderCounts;
+		private System.Windows.Forms.CheckBox _cbReaderToTransact;
+		private System.Windows.Forms.CheckBox _cbBooksToTransact;
+		private System.Windows.Forms.Label _lbRealBooksCount;
 	}
 }
 

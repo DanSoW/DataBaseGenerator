@@ -253,7 +253,8 @@ namespace DataBaseGenerator
 			Dictionary<string, Range> namesProbablityFemale,
 			int count,
 			int maleFemale,
-			IProgress<int> progress,
+			bool checkedTransaction,
+			IProgress<ProgressInfo> progress,
 			CancellationTokenSource cancellationToken)
 		{
 			Random rnd = new Random();
@@ -264,6 +265,7 @@ namespace DataBaseGenerator
 			using (connection)
 			{
 				connection.Open();
+				var transaction = checkedTransaction ? connection.BeginTransaction() : null;
 
 				for (var i = 0; i < count; i++)
 				{
@@ -308,18 +310,39 @@ namespace DataBaseGenerator
 					command.Parameters.AddWithValue("@password_data", faker.Random.String2(10, "1234567890"));
 					command.Parameters.AddWithValue("@full_name", @name);
 					command.Parameters.AddWithValue("@home_address", @faker.Address.StreetAddress());
+
+					if(transaction != null)
+					{
+						command.Transaction = transaction;
+					}
+
 					command.ExecuteNonQuery();
 
-					progress?.Report(i + 1);
+					command = new SqlCommand("SELECT count(*) FROM readers", connection);
+
+					if (transaction != null)
+					{
+						command.Transaction = transaction;
+					}
+
+					var info = (transaction != null) ? $"Читателей в транзакции: {command.ExecuteScalar()}"
+						: $"Количество читателей: {command.ExecuteScalar()}";
+
+					progress?.Report(new ProgressInfo
+					{
+						value = i + 1,
+						info = info
+					});
 
 					if (cancellationToken.IsCancellationRequested)
 					{
 						return;
 					}
 
-					Thread.Sleep(300);
+					Thread.Sleep(50);
 				}
 
+				transaction?.Commit();
 				connection.Close();
 			}
 		}
@@ -352,27 +375,37 @@ namespace DataBaseGenerator
 				["Лариса"] = _tbNameLarisa,
 			});
 
-			var progress = new Progress<int>(value =>
+			/*var progress = new Progress<int>(value =>
 			{
 				_pbReaderGenerator.Value = value;
+			});*/
+
+			var progress = new Progress<ProgressInfo>(prog =>
+			{
+				_pbReaderGenerator.Value = prog.value;
+				_lblRealReaderCounts.Text = prog.info;
 			});
 
 			var count = (int)_nudCountReaders.Value;
 			var maleFemale = _tbMaleFemale.Value;
+			var checkedTransaction = _cbReaderToTransact.Checked;
 
 			_btnGenerateReader.Text = "Отмена";
+			_cbReaderToTransact.Enabled = false;
 
 			await Task.Run(() =>
 			{
 				GenerateReaders(connection, namesProbablityMale,
 					namesProbablityFemale, count,
-					maleFemale, progress,
+					maleFemale, checkedTransaction, progress,
 					_readerGeneratorCancellationToken);
 			});
 
 			_btnGenerateReader.Text = "Запустить";
+			_lblRealReaderCounts.Text = "";
 			_readerGeneratorCancellationToken.Dispose();
 			_readerGeneratorCancellationToken = null;
+			_cbReaderToTransact.Enabled = true;
 		}
 
 		private void _tbNameMichael_ValueChanged(object sender, EventArgs e)
@@ -455,9 +488,10 @@ namespace DataBaseGenerator
 			SqlConnection connection,
 			Dictionary<string, Range> namesGenre,
 			int count,
+			bool checkedTransact,
 			int countPagesFrom,
 			int countPagesTo,
-			IProgress<int> progress,
+			IProgress<ProgressInfo> progress,
 			CancellationTokenSource cancellationToken)
 		{
 			Random rnd = new Random();
@@ -468,6 +502,7 @@ namespace DataBaseGenerator
 			using (connection)
 			{
 				connection.Open();
+				var transaction = checkedTransact ? connection.BeginTransaction() : null;
 
 				for (var i = 0; i < count; i++)
 				{
@@ -499,18 +534,40 @@ namespace DataBaseGenerator
 						@faker.Random.Number(countPagesFrom, countPagesTo).ToString());
 					command.Parameters.AddWithValue("@year_publish", @faker.Random.Number(1800, 2021).ToString());
 
+					if(transaction != null)
+					{
+						command.Transaction = transaction;
+					}
+
 					command.ExecuteNonQuery();
 
-					progress?.Report(i + 1);
+					// progress?.Report(i + 1);
+
+					command = new SqlCommand("SELECT count(*) FROM books", connection);
+
+					if (transaction != null)
+					{
+						command.Transaction = transaction;
+					}
+
+					var info = (transaction != null) ? $"Книг в транзакции: {command.ExecuteScalar()}"
+						: $"Количество книг: {command.ExecuteScalar()}";
+
+					progress?.Report(new ProgressInfo
+					{
+						value = i + 1,
+						info = info
+					});
 
 					if (cancellationToken.IsCancellationRequested)
 					{
 						return;
 					}
 
-					Thread.Sleep(300);
+					Thread.Sleep(50);
 				}
 
+				transaction?.Commit();
 				connection.Close();
 			}
 		}
@@ -543,20 +600,28 @@ namespace DataBaseGenerator
 			var count = (int)_nudCountBooks.Value;
 			var countPagesFrom = _tbCountPagesFrom.Value;
 			var countPagesTo = _tbCountPagesTo.Value;
+			var checkedTransact = _cbBooksToTransact.Checked;
 
-			var progress = new Progress<int>(value =>
+			/*var progress = new Progress<int>(value =>
 			{
 				_pbBookGenerator.Value = value;
+			});*/
+
+			var progress = new Progress<ProgressInfo>(prog =>
+			{
+				_pbBookGenerator.Value = prog.value;
+				_lbRealBooksCount.Text = prog.info;
 			});
 
 			_btnGenerateBook.Text = "Отмена";
+			_cbBooksToTransact.Enabled = false;
 
 			await Task.Run(() =>
 			{
 				GenerateBooks(
 					connection,
 					namesGenre,
-					count, countPagesFrom,
+					count, checkedTransact, countPagesFrom,
 					countPagesTo, progress,
 					_bookGeneratorCancellationToken);
 			});
@@ -564,55 +629,62 @@ namespace DataBaseGenerator
 			_btnGenerateBook.Text = "Запустить";
 			_bookGeneratorCancellationToken.Dispose();
 			_bookGeneratorCancellationToken = null;
+			_cbBooksToTransact.Enabled = true;
 		}
 
 		private Statistics GetStatistics(SqlConnection connection)
 		{
 			var statistics = new Statistics();
 
-			using (connection)
+			try
 			{
-				connection.Open();
-
-				var command = new SqlCommand("SELECT count(*) FROM books", connection);
-				statistics.booksCount = (int)command.ExecuteScalar();
-
-				command = new SqlCommand("SELECT books.genres_id, genres.title, count(*) as count FROM books" +
-						" INNER JOIN genres ON books.genres_id = genres.id GROUP BY books.genres_id, genres.title", connection);
-
-				statistics.booksCountByGenre = new Dictionary<string, int>();
-
-				using(var reader = command.ExecuteReader())
+				using (connection)
 				{
-					while (reader.Read())
+					connection.Open();
+
+					var command = new SqlCommand("SELECT count(*) FROM books", connection);
+					statistics.booksCount = (int)command.ExecuteScalar();
+
+					command = new SqlCommand("SELECT books.genres_id, genres.title, count(*) as count FROM books" +
+							" INNER JOIN genres ON books.genres_id = genres.id GROUP BY books.genres_id, genres.title", connection);
+
+					statistics.booksCountByGenre = new Dictionary<string, int>();
+
+					using (var reader = command.ExecuteReader())
 					{
-						statistics.booksCountByGenre[reader.GetString(1)] = reader.GetInt32(2);
+						while (reader.Read())
+						{
+							statistics.booksCountByGenre[reader.GetString(1)] = reader.GetInt32(2);
+						}
 					}
-				}
 
-				command = new SqlCommand("SELECT count(*) FROM readers", connection);
-				statistics.readersCount = (int)command.ExecuteScalar();
+					command = new SqlCommand("SELECT count(*) FROM readers", connection);
+					statistics.readersCount = (int)command.ExecuteScalar();
 
-				command = new SqlCommand("SELECT 'Михаил' as name, SUM(count) as count FROM (SELECT (SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE (SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
-					"= 'Михаил' GROUP BY full_name) AS T " +
-					"UNION SELECT 'Максим' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " + 
-					" = 'Максим' GROUP BY full_name) AS T UNION SELECT 'Артём' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
-					"= 'Артём' GROUP BY full_name) AS T UNION SELECT 'Мария' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
-					"= 'Мария' GROUP BY full_name) AS T UNION SELECT 'Анна' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
-					"= 'Анна' GROUP BY full_name) AS T UNION SELECT 'Лариса' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
-					"= 'Лариса' GROUP BY full_name) AS T; ", connection);
+					command = new SqlCommand("SELECT 'Михаил' as name, SUM(count) as count FROM (SELECT (SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE (SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+						"= 'Михаил' GROUP BY full_name) AS T " +
+						"UNION SELECT 'Максим' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+						" = 'Максим' GROUP BY full_name) AS T UNION SELECT 'Артём' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+						"= 'Артём' GROUP BY full_name) AS T UNION SELECT 'Мария' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+						"= 'Мария' GROUP BY full_name) AS T UNION SELECT 'Анна' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+						"= 'Анна' GROUP BY full_name) AS T UNION SELECT 'Лариса' as name, SUM(count) as count FROM(SELECT(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) as fname, count(*) as count FROM readers WHERE(SELECT TOP 1 value FROM STRING_SPLIT(full_name, ' ')) " +
+						"= 'Лариса' GROUP BY full_name) AS T; ", connection);
 
-				statistics.readersCountByName = new Dictionary<string, int>();
+					statistics.readersCountByName = new Dictionary<string, int>();
 
-				using (var reader = command.ExecuteReader())
-				{
-					while (reader.Read())
+					using (var reader = command.ExecuteReader())
 					{
-						statistics.readersCountByName[reader.GetString(0)] = reader.GetInt32(1);
+						while (reader.Read())
+						{
+							statistics.readersCountByName[reader.GetString(0)] = reader.GetInt32(1);
+						}
 					}
-				}
 
-				connection.Close();
+					connection.Close();
+				}
+			}
+			catch{
+				return statistics;
 			}
 
 			return statistics;
@@ -670,5 +742,11 @@ namespace DataBaseGenerator
 		/// Количество читателей по имени
 		/// </summary>
 		public Dictionary<string, int> readersCountByName;
+	}
+
+	public struct ProgressInfo
+	{
+		public int value;
+		public string info;
 	}
 }
